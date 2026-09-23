@@ -1,0 +1,275 @@
+========================================================
+              GIT & GITHUB COMMANDS
+========================================================
+
+1. USER CONFIGURATION
+---------------------
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --global --list
+
+Remove:
+git config --global --unset user.name
+git config --global --unset user.email
+
+
+2. CREATE / CLONE REPOSITORY
+----------------------------
+git init
+git clone <repo-url>
+
+Check remote:
+git remote -v
+
+Add GitHub remote:
+git remote add origin <repo-url>
+
+Remove remote:
+git remote remove origin
+
+
+3. CHECK & ADD FILES
+--------------------
+git status
+git add <file>
+git add .
+git add -A
+
+Unstage file:
+git restore --staged <file>
+
+Discard file changes:
+git restore <file>
+
+
+4. COMMIT
+---------
+git commit -m "Initial commit"
+git commit -am "message"
+
+Change last commit message:
+git commit --amend -m "new message"
+
+
+5. BRANCH
+---------
+Show branches:
+git branch
+
+Create branch:
+git branch feature
+
+Switch branch:
+git checkout feature
+git switch feature
+
+Create + switch:
+git checkout -b feature
+
+Merge:
+git merge feature
+
+Delete branch:
+git branch -d feature
+
+Force delete:
+git branch -D feature
+
+
+6. PUSH / PULL
+--------------
+Push main:
+git push origin main
+
+Push branch:
+git push origin feature
+
+First push:
+git push -u origin main
+git push -u origin feature
+
+Pull:
+git pull origin main
+git pull origin feature
+
+Fetch:
+git fetch
+git fetch origin
+
+
+7. HISTORY
+----------
+git log
+git log --oneline
+git log --graph --oneline --all
+
+Show commit:
+git show <commit_id>
+
+
+8. DIFFERENCE
+-------------
+git diff
+
+Staged changes:
+git diff --staged
+
+
+9. UNDO / RESET
+--------------
+Unstage:
+git restore --staged <file>
+
+Soft reset:
+git reset --soft <commit_id>
+
+Mixed reset:
+git reset --mixed <commit_id>
+
+Hard reset:
+git reset --hard <commit_id>
+
+Revert commit:
+git revert <commit_id>
+
+
+10. STASH
+---------
+Save temporary changes:
+git stash
+
+See stash:
+git stash list
+
+Apply stash:
+git stash apply
+
+Apply + remove stash:
+git stash pop
+
+Delete one stash:
+git stash drop
+
+Delete all stash:
+git stash clear
+
+
+========================================================
+       UPLOAD LOCAL PROJECT TO GITHUB
+========================================================
+
+1. Open project in VS Code
+
+2. Open Terminal
+
+3. Check Git:
+git --version
+
+4. Initialize:
+git init
+
+5. Set username/email:
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+
+6. Check files:
+git status
+
+7. Add all files:
+git add .
+
+8. Commit:
+git commit -m "Initial commit"
+
+9. Set main branch:
+git branch -M main
+
+10. Connect GitHub repository:
+git remote add origin https://github.com/USERNAME/REPOSITORY.git
+
+11. Check connection:
+git remote -v
+
+12. Upload:
+git push -u origin main
+
+
+========================================================
+              AFTER MAKING CHANGES
+========================================================
+
+git status
+git add .
+git commit -m "Updated project"
+git push origin main
+
+
+========================================================
+              BRANCH PRACTICAL
+========================================================
+
+git branch feature
+git switch feature
+
+# Make changes in project
+
+git status
+git add .
+git commit -m "Added feature"
+git push -u origin feature
+
+Switch to main:
+git switch main
+
+Merge:
+git merge feature
+
+Push:
+git push origin main
+
+Delete branch:
+git branch -d feature
+
+
+========================================================
+              STASH PRACTICAL
+========================================================
+
+git status
+git stash
+git stash list
+git stash pop
+
+
+========================================================
+              MOST IMPORTANT FLOW
+========================================================
+
+git init
+      ↓
+git status
+      ↓
+git add .
+      ↓
+git commit -m "Initial commit"
+      ↓
+git branch -M main
+      ↓
+git remote add origin <repo-url>
+      ↓
+git push -u origin main
+
+
+========================================================
+IMPORTANT:
+git status = check current condition
+git add . = add all changed files
+git commit = save changes locally
+git push = upload changes to GitHub
+git pull = download latest changes
+git fetch = check/download remote updates
+git branch = manage branches
+git merge = combine branches
+git stash = temporarily save changes
+git log = see commit history
+========================================================
