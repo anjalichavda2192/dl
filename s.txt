@@ -1,0 +1,215 @@
+========================================================
+        SERIALIZATION & DESERIALIZATION
+========================================================
+
+1. SERIALIZATION
+-----------------
+Python Object → File
+
+Meaning:
+Object ko file me save karna = Serialization
+
+Example:
+List → .pkl file
+
+
+2. DESERIALIZATION
+------------------
+File → Python Object
+
+Meaning:
+Saved file se object ko wapas load karna
+= Deserialization
+
+
+========================================================
+                 PICKLE
+========================================================
+
+Import:
+import pickle
+
+SAVE / SERIALIZE:
+-----------------
+with open("data.pkl", "wb") as file:
+    pickle.dump(data, file)
+
+LOAD / DESERIALIZE:
+-------------------
+with open("data.pkl", "rb") as file:
+    data = pickle.load(file)
+
+
+========================================================
+                 JOBLIB
+========================================================
+
+Import:
+import joblib
+
+SAVE / SERIALIZE:
+-----------------
+joblib.dump(data, "data.pkl")
+
+LOAD / DESERIALIZE:
+-------------------
+data = joblib.load("data.pkl")
+
+
+========================================================
+             FILE MODES
+========================================================
+
+"wb" = Write Binary
+      → Save data
+
+"rb" = Read Binary
+      → Load data
+
+
+========================================================
+             LIST USING PICKLE
+========================================================
+
+import pickle
+
+data = [10, 20, 30, 40]
+
+# Save
+with open("list.pkl", "wb") as file:
+    pickle.dump(data, file)
+
+# Load
+with open("list.pkl", "rb") as file:
+    data = pickle.load(file)
+
+print(data)
+
+
+========================================================
+           DICTIONARY USING PICKLE
+========================================================
+
+import pickle
+
+data = {"name": "Anjali", "age": 21}
+
+# Save
+with open("dict.pkl", "wb") as file:
+    pickle.dump(data, file)
+
+# Load
+with open("dict.pkl", "rb") as file:
+    data = pickle.load(file)
+
+print(data)
+
+
+========================================================
+             LIST USING JOBLIB
+========================================================
+
+import joblib
+
+data = [10, 20, 30, 40]
+
+# Save
+joblib.dump(data, "list.pkl")
+
+# Load
+data = joblib.load("list.pkl")
+
+print(data)
+
+
+========================================================
+           DICTIONARY USING JOBLIB
+========================================================
+
+import joblib
+
+data = {"name": "Anjali", "age": 21}
+
+# Save
+joblib.dump(data, "dict.pkl")
+
+# Load
+data = joblib.load("dict.pkl")
+
+print(data)
+
+
+========================================================
+             ML MODEL + PICKLE
+========================================================
+
+# Save model
+with open("model.pkl", "wb") as file:
+    pickle.dump(model, file)
+
+# Load model
+with open("model.pkl", "rb") as file:
+    model = pickle.load(file)
+
+# Prediction
+prediction = model.predict(new_data)
+
+
+========================================================
+             ML MODEL + JOBLIB
+========================================================
+
+# Save model
+joblib.dump(model, "model.pkl")
+
+# Load model
+model = joblib.load("model.pkl")
+
+# Prediction
+prediction = model.predict(new_data)
+
+
+========================================================
+                 MAIN DIFFERENCE
+========================================================
+
+SERIALIZATION:
+Object → File
+
+DESERIALIZATION:
+File → Object
+
+
+PICKLE:
+pickle.dump() → Save
+pickle.load() → Load
+
+JOBLIB:
+joblib.dump() → Save
+joblib.load() → Load
+
+
+========================================================
+             ⭐ 4 LINES TO REMEMBER
+========================================================
+
+pickle.dump()       → Save
+pickle.load()       → Load
+
+joblib.dump()       → Save
+joblib.load()       → Load
+
+
+========================================================
+             ⭐ EXAM DEFINITIONS
+========================================================
+
+Serialization:
+Converting a Python object into a file format
+for storing it.
+
+Deserialization:
+Loading the stored object from a file back
+into Python.
+
+========================================================
