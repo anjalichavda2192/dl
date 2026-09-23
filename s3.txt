@@ -1,0 +1,47 @@
+import pickle
+import joblib
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+
+# Load dataset
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Create and train model
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Save using Pickle
+with open("model_pickle.pkl", "wb") as file:
+    pickle.dump(model, file)
+
+# Save using Joblib
+joblib.dump(model, "model_joblib.pkl")
+
+print("Model saved using Pickle and Joblib.")
+
+# Load Pickle model
+with open("model_pickle.pkl", "rb") as file:
+    pickle_model = pickle.load(file)
+
+# Load Joblib model
+joblib_model = joblib.load("model_joblib.pkl")
+
+# New input data
+new_data = [[5.1, 3.5, 1.4, 0.2]]
+
+# Predictions
+prediction_pickle = pickle_model.predict(new_data)
+prediction_joblib = joblib_model.predict(new_data)
+
+print("Pickle Prediction:", prediction_pickle)
+print("Joblib Prediction:", prediction_joblib)
