@@ -1,0 +1,140 @@
+# 8. CNN - Car vs Motorcycle Classification
+
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+
+# Load dataset
+dataset_path = "dataset"
+
+train_data = tf.keras.utils.image_dataset_from_directory(
+    dataset_path,
+    image_size=(128, 128),
+    batch_size=32,
+    validation_split=0.2,
+    subset="training",
+    seed=42
+)
+
+validation_data = tf.keras.utils.image_dataset_from_directory(
+    dataset_path,
+    image_size=(128, 128),
+    batch_size=32,
+    validation_split=0.2,
+    subset="validation",
+    seed=42
+)
+
+
+# Normalize images
+normalization = tf.keras.layers.Rescaling(1./255)
+
+
+# Create CNN model
+model = tf.keras.Sequential([
+
+    tf.keras.layers.Input(shape=(128, 128, 3)),
+
+    # Normalize
+    normalization,
+
+    # First CNN block
+    tf.keras.layers.Conv2D(
+        32, (3, 3), activation="relu"
+    ),
+    tf.keras.layers.MaxPooling2D((2, 2)),
+
+    # Second CNN block
+    tf.keras.layers.Conv2D(
+        64, (3, 3), activation="relu"
+    ),
+    tf.keras.layers.MaxPooling2D((2, 2)),
+
+    # Third CNN block
+    tf.keras.layers.Conv2D(
+        128, (3, 3), activation="relu"
+    ),
+    tf.keras.layers.MaxPooling2D((2, 2)),
+
+    # Flatten
+    tf.keras.layers.Flatten(),
+
+    # Dense layer
+    tf.keras.layers.Dense(
+        128, activation="relu"
+    ),
+
+    # Output layer
+    tf.keras.layers.Dense(
+        1, activation="sigmoid"
+    )
+])
+
+
+# Compile model
+model.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+
+# Train model
+history = model.fit(
+    train_data,
+    validation_data=validation_data,
+    epochs=10
+)
+
+
+# Training accuracy
+train_loss, train_accuracy = model.evaluate(
+    train_data,
+    verbose=0
+)
+
+# Testing/validation accuracy
+test_loss, test_accuracy = model.evaluate(
+    validation_data,
+    verbose=0
+)
+
+
+print("\nTraining Accuracy:", train_accuracy)
+print("Testing Accuracy:", test_accuracy)
+
+
+# Plot Accuracy
+plt.figure()
+
+plt.plot(history.history["accuracy"])
+plt.plot(history.history["val_accuracy"])
+
+plt.title("Training and Validation Accuracy")
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy")
+
+plt.legend([
+    "Training Accuracy",
+    "Validation Accuracy"
+])
+
+plt.show()
+
+
+# Plot Loss
+plt.figure()
+
+plt.plot(history.history["loss"])
+plt.plot(history.history["val_loss"])
+
+plt.title("Training and Validation Loss")
+plt.xlabel("Epochs")
+plt.ylabel("Loss")
+
+plt.legend([
+    "Training Loss",
+    "Validation Loss"
+])
+
+plt.show()
