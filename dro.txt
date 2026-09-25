@@ -1,0 +1,192 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+
+
+
+# Path of Iris CSV file
+file_path = "C:/Users/Kandarp Malkan/OneDrive/Desktop/DL_Material/iris.csv"
+# file_path = "Z:/iris.csv" FOR THE LAB/ EXAM ENVIRONMENT
+
+# Load dataset
+df = pd.read_csv(file_path)
+
+# Display first 5 rows
+df.head()
+
+
+print("Dataset Shape:", df.shape)
+
+print("\nColumn Names:")
+print(df.columns)
+
+print("\nFirst 5 Rows:")
+print(df.head())
+
+
+# Input features
+X = df[
+    [
+        "sepal_length",
+        "sepal_width",
+        "petal_length",
+        "petal_width"
+    ]
+]
+
+# Target
+y = df["species"]
+
+print("Input Features:")
+print(X.head())
+
+print("\nTarget:")
+print(y.head())
+
+
+
+label_encoder = LabelEncoder()
+
+y_encoded = label_encoder.fit_transform(y)
+
+print("Encoded Labels:")
+print(y_encoded[:10])
+
+print("\nClass Names:")
+print(label_encoder.classes_)
+
+
+# As we have multiclass classification problem we need to convert (setosa, virginica) -> label -> one hot encoding (as using categorical cross entropy)
+
+y_onehot = tf.keras.utils.to_categorical(
+    y_encoded,
+    num_classes=3
+)
+
+print("One-Hot Encoded Target:")
+print(y_onehot[:5])
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y_onehot,
+    test_size=0.20,
+    random_state=42,
+    stratify=y_encoded
+)
+
+print("Training data:", X_train.shape)
+print("Testing data :", X_test.shape)
+
+
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+
+X_test = scaler.transform(X_test)
+
+print("Feature normalization completed.")
+
+
+
+dropout_model = tf.keras.Sequential([
+
+    tf.keras.layers.Input(shape=(4,)),
+
+    tf.keras.layers.Dense(32, activation="relu"),
+    tf.keras.layers.Dropout(0.3),
+
+    tf.keras.layers.Dense(16,activation="relu"),
+    tf.keras.layers.Dropout(0.3),
+
+    tf.keras.layers.Dense(3, activation="softmax")
+])
+
+dropout_model.summary()
+
+dropout_model.compile(
+    optimizer="adam",
+    loss="categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+print("Dropout model compiled successfully.")
+
+
+
+dropout_history = dropout_model.fit(
+    X_train,
+    y_train,
+    validation_split=0.20,
+    epochs=20,
+    batch_size=16,
+    verbose=1
+)
+
+
+test_loss, test_accuracy = dropout_model.evaluate(
+    X_test,
+    y_test,
+    verbose=0
+)
+
+print("Test Loss:", test_loss)
+
+print(
+    "Test Accuracy: {:.2f}%".format(
+        test_accuracy * 100
+    )
+)
+
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(
+    dropout_history.history["accuracy"],
+    label="Training Accuracy"
+)
+
+plt.plot(
+    dropout_history.history["val_accuracy"],
+    label="Validation Accuracy"
+)
+
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+
+plt.title("Training vs Validation Accuracy - Dropout Model")
+
+plt.legend()
+plt.grid(True)
+
+plt.show()
+
+
+
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(
+    dropout_history.history["loss"],
+    label="Training Loss"
+)
+
+plt.plot(
+    dropout_history.history["val_loss"],
+    label="Validation Loss"
+)
+
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+
+plt.title("Training vs Validation Loss - Dropout Model")
+
+plt.legend()
+plt.grid(True)
+
+plt.show()
