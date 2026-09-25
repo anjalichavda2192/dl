@@ -1,0 +1,25 @@
+# Forward Propagation using Single Perceptron
+
+# Inputs
+X1 = 2
+X2 = 3
+
+# Weights
+W1 = 0.5
+W2 = 0.4
+
+# Bias
+b = -1
+
+# Step 1: Calculate weighted sum
+Z = (X1 * W1) + (X2 * W2) + b
+
+# Step 2: Apply activation function
+if Z >= 0:
+    output = 1
+else:
+    output = 0
+
+# Display results
+print("Weighted Sum (Z):", Z)
+print("Output:", output)
