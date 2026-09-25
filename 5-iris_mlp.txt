@@ -1,0 +1,93 @@
+# 5. Iris Dataset with MLP
+
+import tensorflow as tf
+from tensorflow.keras import layers
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, classification_report
+
+
+# Load Iris dataset
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+
+
+# Split the dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+
+
+# Scale the input data
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+
+# Create MLP model
+model = tf.keras.Sequential([
+
+    layers.Input(shape=(4,)),
+
+    layers.Dense(16, activation="relu"),
+
+    layers.Dense(16, activation="relu"),
+
+    layers.Dense(3, activation="softmax")
+])
+
+
+# Compile model
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+
+# Train model
+model.fit(
+    X_train,
+    y_train,
+    epochs=50,
+    batch_size=16,
+    verbose=1
+)
+
+
+# Evaluate model
+loss, accuracy = model.evaluate(
+    X_test,
+    y_test,
+    verbose=0
+)
+
+print("\nTest Accuracy:", accuracy)
+
+
+# Make predictions
+y_probability = model.predict(X_test, verbose=0)
+
+y_pred = y_probability.argmax(axis=1)
+
+
+# Accuracy using sklearn
+print("\nAccuracy Score:")
+print(accuracy_score(y_test, y_pred))
+
+
+# Classification report
+print("\nClassification Report:")
+print(classification_report(
+    y_test,
+    y_pred,
+    target_names=iris.target_names
+))
