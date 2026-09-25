@@ -1,0 +1,217 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+# Path of Iris CSV file
+file_path = "C:/Users/Kandarp Malkan/OneDrive/Desktop/DL_Material/iris.csv"
+# file_path = "Z:/iris.csv" FOR THE LAB/ EXAM ENVIRONMENT
+# Load CSV file
+df = pd.read_csv(file_path)
+
+# Display first 5 rows
+df.head()
+
+print("Dataset Shape:", df.shape)
+
+print("\nColumn Names:")
+print(df.columns)
+
+print("\nFirst 5 Rows:")
+print(df.head())
+
+
+# Input features
+X = df[
+    [
+        "sepal_length",
+        "sepal_width",
+        "petal_length",
+        "petal_width"
+    ]
+]
+
+# Target
+y = df["species"]
+
+print("Features:")
+print(X.head())
+
+print("\nTarget:")
+print(y.head())
+
+
+# As we have multiclass classification problem we need to convert (setosa, virginica) ->  label encoding (as using sparse_categorical_crossentropy)
+
+
+label_encoder = LabelEncoder()
+
+y_encoded = label_encoder.fit_transform(y)
+
+
+print("\nClass Names:")
+print(label_encoder.classes_)
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y_encoded,
+    test_size=0.20,
+    random_state=42,
+    stratify=y_encoded
+)
+
+print("Training data:", X_train.shape)
+print("Testing data :", X_test.shape)
+
+
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+
+X_test = scaler.transform(X_test)
+
+print("Feature standardization completed.")
+
+
+model = tf.keras.Sequential([
+
+    tf.keras.layers.Input(shape=(4,)),
+
+    tf.keras.layers.Dense(32),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation("relu"),
+
+    tf.keras.layers.Dense(16),
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Activation("relu"),
+
+    tf.keras.layers.Dense(3, activation="softmax")
+])
+
+model.summary()
+
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+print("Model compiled successfully.")
+
+
+
+history = model.fit(
+    X_train,
+    y_train,
+    validation_split=0.20,
+    epochs=20,
+    batch_size=16,
+    verbose=1
+)
+
+
+test_loss, test_accuracy = model.evaluate(
+    X_test,
+    y_test,
+    verbose=0
+)
+
+print("Test Loss:", test_loss)
+
+print(
+    "Test Accuracy: {:.2f}%".format(
+        test_accuracy * 100
+    )
+)
+
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(
+    history.history["accuracy"],
+    label="Training Accuracy"
+)
+
+plt.plot(
+    history.history["val_accuracy"],
+    label="Validation Accuracy"
+)
+
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+
+plt.title("Training and Validation Accuracy")
+
+plt.legend()
+plt.grid(True)
+
+plt.show()
+
+
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(
+    history.history["loss"],
+    label="Training Loss"
+)
+
+plt.plot(
+    history.history["val_loss"],
+    label="Validation Loss"
+)
+
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+
+plt.title("Training and Validation Loss")
+
+plt.legend()
+plt.grid(True)
+
+plt.show()
+
+
+
+
+y_pred_probability = model.predict(X_test)
+
+# Select class having the highest probability
+y_pred = np.argmax(
+    y_pred_probability,
+    axis=1
+)
+
+print("Predicted Classes:")
+print(y_pred)
+
+print("\nActual Classes:")
+print(y_test)
+
+
+
+
+print("Class Mapping:")
+
+for i, class_name in enumerate(label_encoder.classes_):
+    print(i, "=", class_name)
+
+
+
+'cm = confusion_matrix(y_test,y_pred)
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=label_encoder.classes_
+)
+
+disp.plot()
+
+plt.title("Iris Classification - Confusion Matrix")
+
+plt.show()
