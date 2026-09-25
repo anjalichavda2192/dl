@@ -1,0 +1,110 @@
+# 4. Node Dropout
+
+import tensorflow as tf
+from tensorflow.keras import layers
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Load dataset
+data = load_breast_cancer()
+
+X = data.data
+y = data.target
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Scale data
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+
+# --------------------------------
+# Model WITHOUT Dropout
+# --------------------------------
+
+model_without_dropout = tf.keras.Sequential([
+    layers.Input(shape=(X_train.shape[1],)),
+
+    layers.Dense(64, activation="relu"),
+    layers.Dense(64, activation="relu"),
+    layers.Dense(32, activation="relu"),
+
+    layers.Dense(1, activation="sigmoid")
+])
+
+model_without_dropout.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+print("Training model WITHOUT Dropout")
+
+history1 = model_without_dropout.fit(
+    X_train,
+    y_train,
+    epochs=20,
+    batch_size=32,
+    validation_split=0.2,
+    verbose=0
+)
+
+loss1, accuracy1 = model_without_dropout.evaluate(
+    X_test, y_test, verbose=0
+)
+
+
+# --------------------------------
+# Model WITH Dropout
+# --------------------------------
+
+model_with_dropout = tf.keras.Sequential([
+    layers.Input(shape=(X_train.shape[1],)),
+
+    layers.Dense(64, activation="relu"),
+    layers.Dropout(0.5),
+
+    layers.Dense(64, activation="relu"),
+    layers.Dropout(0.5),
+
+    layers.Dense(32, activation="relu"),
+    layers.Dropout(0.5),
+
+    layers.Dense(1, activation="sigmoid")
+])
+
+model_with_dropout.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+print("Training model WITH Dropout")
+
+history2 = model_with_dropout.fit(
+    X_train,
+    y_train,
+    epochs=20,
+    batch_size=32,
+    validation_split=0.2,
+    verbose=0
+)
+
+loss2, accuracy2 = model_with_dropout.evaluate(
+    X_test, y_test, verbose=0
+)
+
+
+# --------------------------------
+# Compare Results
+# --------------------------------
+
+print("\nResults:")
+print("Accuracy WITHOUT Dropout:", accuracy1)
+print("Accuracy WITH Dropout:", accuracy2)
