@@ -1,0 +1,42 @@
+# 6. Data Encoding
+
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
+
+# Create sample dataset
+data = {
+    "Gender": ["Male", "Female", "Female", "Male", "Female"],
+    "City": ["Ahmedabad", "Surat", "Rajkot", "Ahmedabad", "Surat"],
+    "Result": ["Pass", "Pass", "Fail", "Pass", "Fail"]
+}
+
+df = pd.DataFrame(data)
+
+print("Original Data:")
+print(df)
+
+
+# --------------------------------
+# Label Encoding
+# --------------------------------
+
+label_encoder = LabelEncoder()
+
+df["Result_Encoded"] = label_encoder.fit_transform(df["Result"])
+
+print("\nAfter Label Encoding:")
+print(df)
+
+
+# --------------------------------
+# One-Hot Encoding
+# --------------------------------
+
+df_onehot = pd.get_dummies(
+    df,
+    columns=["Gender", "City"]
+)
+
+print("\nAfter One-Hot Encoding:")
+print(df_onehot)
