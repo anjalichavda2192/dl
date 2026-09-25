@@ -1,0 +1,110 @@
+# 3. Batch Normalization
+
+import tensorflow as tf
+from tensorflow.keras import layers
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Load dataset
+data = load_breast_cancer()
+
+X = data.data
+y = data.target
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Scale data
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+
+# -------------------------------
+# Model WITHOUT Batch Normalization
+# -------------------------------
+
+model_without_bn = tf.keras.Sequential([
+    layers.Input(shape=(X_train.shape[1],)),
+
+    layers.Dense(64, activation="relu"),
+    layers.Dense(64, activation="relu"),
+    layers.Dense(32, activation="relu"),
+
+    layers.Dense(1, activation="sigmoid")
+])
+
+model_without_bn.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+print("Training model WITHOUT Batch Normalization")
+
+history1 = model_without_bn.fit(
+    X_train,
+    y_train,
+    epochs=20,
+    batch_size=32,
+    validation_split=0.2,
+    verbose=0
+)
+
+loss1, accuracy1 = model_without_bn.evaluate(
+    X_test, y_test, verbose=0
+)
+
+
+# -------------------------------
+# Model WITH Batch Normalization
+# -------------------------------
+
+model_with_bn = tf.keras.Sequential([
+    layers.Input(shape=(X_train.shape[1],)),
+
+    layers.Dense(64, activation="relu"),
+    layers.BatchNormalization(),
+
+    layers.Dense(64, activation="relu"),
+    layers.BatchNormalization(),
+
+    layers.Dense(32, activation="relu"),
+    layers.BatchNormalization(),
+
+    layers.Dense(1, activation="sigmoid")
+])
+
+model_with_bn.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+print("Training model WITH Batch Normalization")
+
+history2 = model_with_bn.fit(
+    X_train,
+    y_train,
+    epochs=20,
+    batch_size=32,
+    validation_split=0.2,
+    verbose=0
+)
+
+loss2, accuracy2 = model_with_bn.evaluate(
+    X_test, y_test, verbose=0
+)
+
+
+# -------------------------------
+# Compare Results
+# -------------------------------
+
+print("\nResults:")
+print("Accuracy WITHOUT Batch Normalization:", accuracy1)
+print("Accuracy WITH Batch Normalization:", accuracy2)
