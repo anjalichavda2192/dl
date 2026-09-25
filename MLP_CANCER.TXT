@@ -1,0 +1,187 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+
+# Path of Breast Cancer CSV file
+file_path = "C:/Users/Kandarp Malkan/OneDrive/Desktop/DL_Material/breast-cancer.csv"
+# file_path = "Z:/breast-cancer.csv" FOR THE LAB/ EXAM ENVIRONMENT
+
+# Load dataset
+df = pd.read_csv(file_path)
+
+# Display first 5 rows
+df.head()
+
+
+print("Dataset Shape:", df.shape)
+
+print("\nColumn Names:")
+print(df.columns.tolist())
+
+print("\nFirst 5 Rows:")
+print(df.head())
+
+
+# Remove any unnamed index column if present
+df = df.loc[:, ~df.columns.str.contains("^Unnamed")]
+
+print("Updated Dataset Shape:", df.shape)
+print(df.head())
+
+
+df["diagnosis"] = df["diagnosis"].map({
+    "M": 0,
+    "B": 1
+})
+
+print("Target values:")
+print(df["diagnosis"].value_counts())
+
+
+# Input features
+X = df.drop(columns=["diagnosis"])
+
+# Target
+y = df["diagnosis"]
+
+print("Number of features:", X.shape[1])
+print("X shape:", X.shape)
+print("y shape:", y.shape)
+
+X = X.apply(pd.to_numeric, errors="coerce")
+
+# Remove rows containing missing values
+X = X.dropna()
+
+# Keep corresponding target values
+y = y.loc[X.index]
+
+print("Final X shape:", X.shape)
+print("Final y shape:", y.shape)
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+    stratify=y
+)
+
+print("Training data:", X_train.shape)
+print("Testing data :", X_test.shape)
+
+
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+
+X_test = scaler.transform(X_test)
+
+print("Feature standardization completed.")
+
+
+
+model = tf.keras.Sequential([
+
+    tf.keras.layers.Input(shape=(30,)),
+    tf.keras.layers.Dense(32, activation="relu"),
+    tf.keras.layers.Dense(16,activation="relu"),
+    tf.keras.layers.Dense(1,activation="sigmoid")
+])
+
+model.summary()
+
+
+
+model.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+print("Model compiled successfully.")
+
+
+history = model.fit(
+    X_train,
+    y_train,
+    validation_split=0.20,
+    epochs=20,
+    batch_size=16,
+    verbose=1
+)
+
+
+test_loss, test_accuracy = model.evaluate(
+    X_test,
+    y_test,
+    verbose=0
+)
+
+print("Test Loss:", test_loss)
+
+print(
+    "Test Accuracy: {:.2f}%".format(
+        test_accuracy * 100
+    )
+)
+
+
+y_probability = model.predict(X_test)
+
+
+
+y_pred = (y_probability >= 0.5).astype(int).flatten()
+
+print("Predicted Classes:")
+print(y_pred[:10])
+
+print("\nActual Classes:")
+print(y_test.values[:10])
+
+
+
+cm = confusion_matrix(y_test,y_pred)
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=["Malignant", "Benign"]
+)
+
+disp.plot()
+
+plt.title("Breast Cancer Classification - Confusion Matrix")
+
+plt.show()
+
+
+
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(
+    history.history["accuracy"],
+    label="Training Accuracy"
+)
+
+plt.plot(
+    history.history["val_accuracy"],
+    label="Validation Accuracy"
+)
+
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+
+plt.title("Training and Validation Accuracy")
+
+plt.legend()
+plt.grid(True)
+
+plt.show()
